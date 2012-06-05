@@ -86,9 +86,68 @@
 	return [as autorelease];
 }
 
++ (SHKActionSheet *)actionSheetForType:(SHKShareType)type constrainedToSharers:(NSArray*)constrainedSharers
+{
+	SHKActionSheet *as = [[SHKActionSheet alloc] initWithTitle:nil//SHKLocalizedString(@"")
+                                                    delegate:nil
+                                           cancelButtonTitle:nil
+                                      destructiveButtonTitle:nil
+                                           otherButtonTitles:nil];
+  as.delegate = as;
+	as.item = [[[SHKItem alloc] init] autorelease];
+	as.item.shareType = type;
+  
+	as.sharers = [NSMutableArray arrayWithCapacity:0];
+  
+	NSMutableArray *favoriteSharers = [[SHK favoriteSharersForType:type] mutableCopy];
+	for (NSString *constrainedSharer in constrainedSharers) {
+		if ([favoriteSharers containsObject:constrainedSharer] == NO) {
+			[favoriteSharers addObject:constrainedSharer];
+		}
+	}
+  
+	// Add buttons for each favorite sharer
+	id class;
+	for(NSString *sharerId in favoriteSharers)
+	{
+		if ([constrainedSharers containsObject:sharerId] == NO) {
+			continue;
+		}
+    
+		class = NSClassFromString(sharerId);
+		if ([class canShare])
+		{
+			[as addButtonWithTitle: [class sharerTitle] ];
+			[as.sharers addObject:sharerId];
+		}
+	}
+  
+  [favoriteSharers release];
+  
+  /*if([SHKCONFIG(showActionSheetMoreButton) boolValue])
+   {
+   // Add More button
+   [as addButtonWithTitle:SHKLocalizedString(@"More...")];
+   }
+   
+   // Add Cancel button
+   [as addButtonWithTitle:SHKLocalizedString(@"Cancel")];
+   as.cancelButtonIndex = as.numberOfButtons -1;
+   */
+  
+	return [as autorelease];
+}
+
 + (SHKActionSheet *)actionSheetForItem:(SHKItem *)i
 {
 	SHKActionSheet *as = [self actionSheetForType:i.shareType];
+	as.item = i;
+	return as;
+}
+
++ (SHKActionSheet *)actionSheetForItem:(SHKItem *)i constrainedToSharers:(NSArray*)constrainedSharers
+{
+	SHKActionSheet *as = [self actionSheetForType:i.shareType constrainedToSharers:constrainedSharers];
 	as.item = i;
 	return as;
 }
