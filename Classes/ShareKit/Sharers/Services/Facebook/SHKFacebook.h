@@ -34,4 +34,6 @@
 
 + (BOOL)handleOpenURL:(NSURL*)url;
 
++ (Facebook*)facebook;
+
 @end
