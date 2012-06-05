@@ -46,6 +46,7 @@
 
 - (void)show;
 - (void)hideAfterDelay;
+- (void)hideAfterDelay:(double)delay;
 - (void)hide;
 - (void)persist;
 - (void)hidden;

@@ -201,6 +201,7 @@ static NSString *const kSHKFacebookUserInfo =@"kSHKFacebookUserInfo";
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSHKStoredItemKey];
   [self flushAccessToken];
   [[self facebook] logout];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"FacebookDidLogout" object:self];
 }
 
 #pragma mark -
@@ -341,6 +342,9 @@ static NSString *const kSHKFacebookUserInfo =@"kSHKFacebookUserInfo";
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSDictionary *storedItem = [defaults objectForKey:kSHKStoredItemKey];
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"FacebookDidLogin" object:self];
+  
 	if (storedItem)
 	{
 		self.item = [SHKItem itemFromDictionary:storedItem];

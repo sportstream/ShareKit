@@ -194,7 +194,7 @@
 
 + (id)shareItem:(SHKItem *)i
 {
-	[SHK pushOnFavorites:[self sharerId] forType:i.shareType];
+	//[SHK pushOnFavorites:[self sharerId] forType:i.shareType];
 	
 	// Create controller and set share options
 	SHKSharer *controller = [[self alloc] init];
@@ -208,7 +208,7 @@
 
 - (void)loadItem:(SHKItem *)i
 {
-	[SHK pushOnFavorites:[self sharerId] forType:i.shareType];
+	//[SHK pushOnFavorites:[self sharerId] forType:i.shareType];
 	
 	// Create controller set share options
 	self.item = i;

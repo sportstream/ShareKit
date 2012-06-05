@@ -72,8 +72,8 @@
     
     TWTweetComposeViewController *iOS5twitter = [[TWTweetComposeViewController alloc] init];
     
-    [iOS5twitter addImage:self.item.image];    
-    [iOS5twitter addURL:self.item.URL];
+    //[iOS5twitter addImage:self.item.image];    
+    //[iOS5twitter addURL:self.item.URL];
     
     if (self.item.shareType == SHKShareTypeText) 
     {
