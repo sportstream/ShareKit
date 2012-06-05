@@ -37,5 +37,6 @@
 @property (retain) id<SHKShareItemDelegate> shareDelegate;
 
 + (SHKActionSheet *)actionSheetForItem:(SHKItem *)i;
++ (SHKActionSheet *)actionSheetForItem:(SHKItem *)i constrainedToSharers:(NSArray*)constrainedSharers;
 
 @end
