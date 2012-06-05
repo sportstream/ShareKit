@@ -196,7 +196,7 @@ static NSString *const kSHKStoredShareInfoKey=@"kSHKStoredShareInfo";
 
 + (id)shareItem:(SHKItem *)i
 {
-	[SHK pushOnFavorites:[self sharerId] forItem:i];
+	//[SHK pushOnFavorites:[self sharerId] forItem:i];
 	
 	// Create controller and set share options
 	SHKSharer *controller = [[self alloc] init];
@@ -210,7 +210,7 @@ static NSString *const kSHKStoredShareInfoKey=@"kSHKStoredShareInfo";
 
 - (void)loadItem:(SHKItem *)i
 {
-	[SHK pushOnFavorites:[self sharerId] forItem:i];
+	//[SHK pushOnFavorites:[self sharerId] forItem:i];
 	
 	// Create controller set share options
 	self.item = i;
