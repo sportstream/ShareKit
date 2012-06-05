@@ -38,6 +38,7 @@
 
 - (void)dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 	[_item release];
 	[_sharers release];
 	[_shareDelegate release];
@@ -53,6 +54,7 @@
 											 otherButtonTitles:nil];
 	as.delegate = as;
 	as.item = item;
+  [[NSNotificationCenter defaultCenter] addObserver:as selector:@selector(appDidGoToBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
 	
 	as.sharers = [NSMutableArray arrayWithCapacity:0];
 	NSArray *favoriteSharers = [SHK favoriteSharersForItem:item];
@@ -83,6 +85,11 @@
 	return [as autorelease];
 }
 
+- (void)appDidGoToBackground	
+{
+  [self dismissWithClickedButtonIndex:-1 animated:NO];	
+}
+
 + (SHKActionSheet *)actionSheetForType:(SHKShareType)type constrainedToSharers:(NSArray*)constrainedSharers
 {
 	SHKActionSheet *as = [[SHKActionSheet alloc] initWithTitle:nil//SHKLocalizedString(@"")
@@ -93,6 +100,8 @@
   as.delegate = as;
 	as.item = [[[SHKItem alloc] init] autorelease];
 	as.item.shareType = type;
+  
+  [[NSNotificationCenter defaultCenter] addObserver:as selector:@selector(appDidGoToBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
   
 	as.sharers = [NSMutableArray arrayWithCapacity:0];
   
