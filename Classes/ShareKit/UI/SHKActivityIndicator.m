@@ -105,6 +105,12 @@ static SHKActivityIndicator *_currentIndicator = nil;
 	[self performSelector:@selector(hide) withObject:nil afterDelay:0.6];
 }
 
+- (void)hideAfterDelay:(double)delay
+{
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hide) object:nil];
+  [self performSelector:@selector(hide) withObject:nil afterDelay:delay];
+}
+
 - (void)hide
 {
 	[UIView beginAnimations:nil context:NULL];
