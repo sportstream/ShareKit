@@ -382,6 +382,7 @@ static NSString *const kSHKFacebookUserInfo =@"kSHKFacebookUserInfo";
     
     [self saveFBAccessToken:accessToken expiring:expiresAt];
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"FacebookDidExtendToken" object:self];
 }
 
 - (void)fbDidLogout {
@@ -391,6 +392,7 @@ static NSString *const kSHKFacebookUserInfo =@"kSHKFacebookUserInfo";
 
 - (void)fbSessionInvalidated {
     
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"FacebookSessionInvalidated" object:self];
 }
 
 #pragma mark -
