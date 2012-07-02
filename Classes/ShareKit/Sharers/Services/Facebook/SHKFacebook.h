@@ -35,5 +35,6 @@
 + (BOOL)handleOpenURL:(NSURL*)url;
 
 + (Facebook*)facebook;
++ (void)logoutWithOptions:(NSDictionary*)options;
 
 @end
