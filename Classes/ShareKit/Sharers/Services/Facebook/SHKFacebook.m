@@ -204,6 +204,17 @@ static NSString *const kSHKFacebookUserInfo =@"kSHKFacebookUserInfo";
   [[NSNotificationCenter defaultCenter] postNotificationName:@"FacebookDidLogout" object:self];
 }
 
+/** ShareKit Library Customization for SportStream iPad
+ *  Take an object and pass it back with the notification
+ **/
++ (void)logoutWithOptions:(NSDictionary*)options
+{
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSHKStoredItemKey];
+  [self flushAccessToken];
+  [[self facebook] logout];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"FacebookDidLogout" object:self userInfo:options];
+}
+
 #pragma mark -
 #pragma mark Share API Methods
 
