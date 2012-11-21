@@ -120,7 +120,7 @@ static SHKFacebook *requestingPermisSHKFacebook=nil;
     
     if (allowLoginUI || (session.state == FBSessionStateCreatedTokenLoaded)) {
         
-		if (allowLoginUI) [[SHKActivityIndicator currentIndicator] displayActivity:SHKLocalizedString(@"Logging In...")];
+		//if (allowLoginUI) [[SHKActivityIndicator currentIndicator] displayActivity:SHKLocalizedString(@"Logging In...")];
         
         [FBSession setActiveSession:session];
         [session openWithBehavior:FBSessionLoginBehaviorUseSystemAccountIfPresent
@@ -154,15 +154,18 @@ static SHKFacebook *requestingPermisSHKFacebook=nil;
 				[self authDidFinish:true];
 			}
 			
-			[self tryPendingAction];
+			//[self tryPendingAction];
 		}
 	}else if (FB_ISSESSIONSTATETERMINAL(state)){
-		if (authingSHKFacebook == self) {	// the state can change for a lot of reasons that are out of the login loop
-			[self authDidFinish:NO];		// for exaple closing the session in dealloc.
-		}else{
-			// seems that if you expire the tolken that it thinks is valid it will close the session without reporting
-			// errors super awesome. So look for the errors in the FBRequestHandlerCallback
-		}
+    if (state == FBSessionStateClosed)
+    {
+      //if (authingSHKFacebook == self) {	// the state can change for a lot of reasons that are out of the login loop
+        [self authDidFinish:NO];		// for exaple closing the session in dealloc.
+      //}else{
+        // seems that if you expire the tolken that it thinks is valid it will close the session without reporting
+        // errors super awesome. So look for the errors in the FBRequestHandlerCallback
+      //}
+    }
 	}
 	
 	// post a notification so that custom UI can show the login state.
