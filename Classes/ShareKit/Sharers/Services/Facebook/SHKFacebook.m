@@ -650,6 +650,20 @@ static SHKFacebook *requestingPermisSHKFacebook=nil;
     }    
     
  	[self tryToSend];
-}  
+}
+
+// Functions that FacebookHelper calls
+- (void)setValueOfRequestingPermisSHKFacebook:(SHKFacebook*)shkFacebook__
+{
+  requestingPermisSHKFacebook = shkFacebook__ ? self : nil;
+  return;
+}
+
+- (SHKFacebook*)getValueOfRequestingPermisSHKFacebook
+{
+  return requestingPermisSHKFacebook;
+}
+
+
 
 @end
