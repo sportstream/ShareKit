@@ -9,7 +9,6 @@
 @interface SHKFormControllerLargeTextField ()
 
 @property (nonatomic, retain) UILabel *counter;
-@property BOOL shareIsCancelled;
 
 - (void)layoutCounter;
 - (void)updateCounter;
@@ -23,17 +22,12 @@
 
 @implementation SHKFormControllerLargeTextField
 
-@synthesize delegate, textView, maxTextLength;
-@synthesize counter, hasLink, image, imageTextLength;
-@synthesize text;
-@synthesize shareIsCancelled;
-
 - (void)dealloc 
 {
-	[textView release];
-	[counter release];
-	[text release];
-	[image release];
+	[_textView release];
+	[_counter release];
+	[_text release];
+	[_image release];
 	
 	[super dealloc];
 }
@@ -42,10 +36,11 @@
 {
 	if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) 
 	{		
-		delegate = aDelegate;
-		imageTextLength = 0;
-		hasLink = NO;
-		maxTextLength = 0;
+		_delegate = aDelegate;
+		_imageTextLength = 0;
+		_hasLink = NO;
+		_maxTextLength = 0;
+        _allowSendingEmptyMessage = NO;
 	}
 	return self;
 }
@@ -56,15 +51,17 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	self.textView = [[[UITextView alloc] initWithFrame:self.view.bounds] autorelease];
-	textView.delegate = self;
-	textView.font = [UIFont systemFontOfSize:15];
-	textView.contentInset = UIEdgeInsetsMake(5,5,5,0);
-	textView.backgroundColor = [UIColor whiteColor];	
-	textView.autoresizesSubviews = YES;
-	textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	UITextView *aTextView = [[UITextView alloc] initWithFrame:self.view.bounds];
+	aTextView.delegate = self;
+	aTextView.font = [UIFont systemFontOfSize:15];
+	aTextView.contentInset = UIEdgeInsetsMake(5,5,5,0);
+	aTextView.backgroundColor = [UIColor whiteColor];	
+	aTextView.autoresizesSubviews = YES;
+	aTextView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
-	[self.view addSubview:textView];
+	[self.view addSubview:aTextView];
+    self.textView = aTextView;
+    [aTextView release];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -72,7 +69,7 @@
 	[super viewWillAppear:animated];
 	
 	// save to set the text now
-	textView.text = text;
+	self.textView.text = self.text;
 	
 	[self setupBarButtonItems];
 }
@@ -95,14 +92,6 @@
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc removeObserver:self name: UIKeyboardWillShowNotification object:nil];
 	
-	//If user really cancelled share. Sometimes sharers have more stages (e.g Foursquare) and user only returned to previous stage - back on navigation stack.
-	if (self.shareIsCancelled) {
-        
-        if (![UIViewController instancesRespondToSelector:@selector(dismissViewControllerAnimated:completion:)]) {
-            // Remove the SHK view wrapper from the window
-            [[SHK currentHelper] viewWasDismissed];
-        }
-    }
 }
 
 - (void)setupBarButtonItems {
@@ -160,7 +149,7 @@
 	CGFloat distFromBottom = screenHeight - ((upsideDown ? screenHeight - topOfView : topOfView ) + self.view.bounds.size.height) + ([UIApplication sharedApplication].statusBarHidden || upsideDown ? 0 : 20);							
 	CGFloat maxViewHeight = self.view.bounds.size.height - keyboardHeight + distFromBottom;
 	
-	textView.frame = CGRectMake(0,0,self.view.bounds.size.width,maxViewHeight);
+	self.textView.frame = CGRectMake(0,0,self.view.bounds.size.width,maxViewHeight);
 	
 	[self layoutCounter];
 }
@@ -186,7 +175,7 @@
 		self.counter = aLabel;
 		[aLabel release];
 		
-		[self.view addSubview:counter];
+		[self.view addSubview:self.counter];
 		[self layoutCounter];
 	}
 	
@@ -199,7 +188,14 @@
     } else {
         count = @"";
     }
-    counter.text = [NSString stringWithFormat:@"%@%@", self.image ? [NSString stringWithFormat:@"Image %@ ",countNumber>0?@"+":@""]:@"", count];
+    
+    if (self.image) {
+        self.counter.text = [NSString stringWithFormat:@"%@%@", [NSString stringWithFormat:@"Image %@ ",countNumber>0?@"+":@""], count];
+    } else if (self.hasLink) {
+        self.counter.text = [NSString stringWithFormat:@"%@%@", [NSString stringWithFormat:@"Link %@ ",countNumber>0?@"+":@""], count];
+    } else {
+        self.counter.text = count;
+    }
  	
 	if (countNumber >= 0) {
 		
@@ -215,7 +211,7 @@
 
 - (void)ifNoTextDisableSendButton {
 	
-	if (self.textView.text.length) {
+	if (self.textView.text.length || self.allowSendingEmptyMessage) {
 		self.navigationItem.rightBarButtonItem.enabled = YES; 
 	} else {
 		self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -226,7 +222,7 @@
 {
 	if (![self shouldShowCounter]) return;
 	
-	counter.frame = CGRectMake(self.textView.bounds.size.width-150-15,
+	self.counter.frame = CGRectMake(self.textView.bounds.size.width-150-15,
 										self.textView.bounds.size.height-15-9,
 										150,
 										15);
@@ -261,7 +257,6 @@
 
 - (void)cancel
 {	
-	self.shareIsCancelled = YES;
     [[SHK currentHelper] hideCurrentViewControllerAnimated:YES];
 	[self.delegate sendDidCancel];
 }
